@@ -214,10 +214,17 @@ class RouteBuilder {
       _buildRecursive(context, matchList, startIndex + 1, onPopPage,
           routerNeglect, keyToPages, shellNavigatorKey, registry);
 
+      List<NavigatorObserver> newNavObservers = [];
+      this.observers.forEach((element) {
+        NavigatorObserver newNavObserver =
+            _GoNavigatorObserver(original: element);
+        newNavObservers.add(newNavObserver);
+      });
+
       // Build the Navigator and/or StatefulNavigationShell
       Navigator buildNavigator(String? restorationScopeId) => _buildNavigator(
           onPopPage, keyToPages[shellNavigatorKey]!, shellNavigatorKey,
-          restorationScopeId: restorationScopeId);
+          observers: newNavObservers, restorationScopeId: restorationScopeId);
       final Widget child;
       if (route is StatefulShellRoute) {
         final String? restorationScopeId =
@@ -563,5 +570,42 @@ class _RouteBuilderException implements Exception {
   @override
   String toString() {
     return '$message ${exception ?? ""}';
+  }
+}
+
+class _GoNavigatorObserver extends NavigatorObserver {
+  _GoNavigatorObserver({required this.original});
+
+  final NavigatorObserver original;
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    original.didPush(route, previousRoute);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    original.didPop(route, previousRoute);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    original.didRemove(route, previousRoute);
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    original.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+  }
+
+  @override
+  void didStartUserGesture(
+      Route<dynamic> route, Route<dynamic>? previousRoute) {
+    original.didStartUserGesture(route, previousRoute);
+  }
+
+  @override
+  void didStopUserGesture() {
+    original.didStopUserGesture();
   }
 }
