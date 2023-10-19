@@ -76,6 +76,7 @@
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  static NSString *const kMapStyle = @"[{\"featureType\": \"poi\",\"stylers\": [{\"visibility\": \"off\"}]}]";
   GMSCameraPosition *camera =
       [FLTGoogleMapJSONConversions cameraPostionFromDictionary:args[@"initialCameraPosition"]];
   GMSMapView *mapView;
@@ -94,6 +95,15 @@
   } else {
     mapView = [GMSMapView mapWithFrame:frame camera:camera];
   }
+
+  NSError *error;
+  GMSMapStyle *style = [GMSMapStyle styleWithJSONString:kMapStyle error:&error];
+
+  if (!style) {
+    NSLog(@"The style definition could not be loaded: %@", error);
+  }
+
+  mapView.mapStyle = style;
 
   return [self initWithMapView:mapView viewIdentifier:viewId arguments:args registrar:registrar];
 }

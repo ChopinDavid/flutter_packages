@@ -214,6 +214,11 @@ final class GoogleMapController
           initialPadding.get(2),
           initialPadding.get(3));
     }
+    boolean success = googleMap.setMapStyle(new MapStyleOptions("[{\"featureType\": \"poi\",\"stylers\": [{\"visibility\": \"off\"}]}]"));
+
+    if (!success) {
+      Log.e(TAG, "Style parsing failed.");
+    }
   }
 
   @Override
